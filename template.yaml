@@ -1,0 +1,160 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Journal collaboratif - bloc 1 (liens de telechargement et PDF)
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures: [arm64]
+    MemorySize: 512
+    Timeout: 15
+    Environment:
+      Variables:
+        DOCS_TABLE: !Ref DocumentsTable
+        LINKS_TABLE: !Ref LinksTable
+        PDF_BUCKET: !Ref PdfBucket
+
+Resources:
+  # --- Données ---------------------------------------------------------
+  DocumentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: docId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: docId
+          KeyType: HASH
+
+  LinksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: linkId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: linkId
+          KeyType: HASH
+
+  # Bucket privé : personne ne peut lire un PDF sans adresse signée temporaire.
+  # Pas de règle d'expiration : un PDF supprimé pendant que sa version reste la
+  # version courante ferait perdre un exemplaire au visiteur.
+  PdfBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # --- API -------------------------------------------------------------
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ['*']
+        AllowMethods: [GET, POST, PUT, OPTIONS]
+        AllowHeaders: [content-type, x-user-email, x-user-name]
+
+  # --- Fonction publique : page du journal et téléchargement (chemin du pic) ---
+  PublicFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: esm
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        OutExtension:
+          - js=.mjs
+        EntryPoints:
+          - src/handlers/public.js
+    Properties:
+      CodeUri: .
+      Handler: public.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:UpdateItem]
+              Resource:
+                - !GetAtt LinksTable.Arn
+                - !GetAtt DocumentsTable.Arn
+            - Effect: Allow
+              Action: [s3:GetObject, s3:PutObject]
+              Resource: !Sub '${PdfBucket.Arn}/pdf/*'
+      Events:
+        Info:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /api/links/{linkId}
+        Download:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /api/links/{linkId}/download
+
+  # --- Fonction des rédacteurs : créer un document, publier un lien ---
+  EditorFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: esm
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        OutExtension:
+          - js=.mjs
+        EntryPoints:
+          - src/handlers/editor.js
+    Properties:
+      CodeUri: .
+      Handler: editor.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
+              Resource: !GetAtt DocumentsTable.Arn
+            - Effect: Allow
+              Action: [dynamodb:PutItem]
+              Resource: !GetAtt LinksTable.Arn
+      Events:
+        CreateDocument:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /api/documents
+        SetText:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: PUT
+            Path: /api/documents/{docId}/texte
+        Publish:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /api/documents/{docId}/links
+
+Outputs:
+  ApiUrl:
+    Description: Adresse de base de l'API
+    Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  PdfBucketName:
+    Description: Bucket des PDF (à vider avant de supprimer la pile)
+    Value: !Ref PdfBucket
