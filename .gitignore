@@ -1,0 +1,10 @@
+node_modules/
+.aws-sam/
+dist/
+.env
+.env.*
+*.pem
+*.key
+*accessKeys*.csv
+rootkey.csv
+.DS_Store
