@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Journal de l'école</title>
+    <link rel="stylesheet" href="css/acceuil.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <p class="kicker">Association étudiante</p>
+      <h1>Journal de l'école</h1>
+      <p class="rule">Seulement des articles de l'école.</p>
+      <div class="actions">
+        <button type="button" data-espace="redacteur">Espace rédacteur</button>
+        <button type="button" class="secondaire" data-espace="association">Espace association</button>
+      </div>
+      <p id="message-espace" class="note" role="status"></p>
+    </header>
+
+    <main>
+      <p class="banner">
+        Maquette locale. Les deux cartes sont des exemples.
+        Rien n'est envoyé, et aucun exemplaire n'est compté.
+      </p>
+
+      <h2>Parutions</h2>
+      <ul class="issues">
+        <li class="issue">
+          <p class="example">Exemple</p>
+          <h3>La rentrée en images</h3>
+          <p>Amina, Lucas</p>
+          <p>120 téléchargements sur 500</p>
+          <p class="state state-open">Disponible</p>
+          <button type="button" data-exemple="rentree">Télécharger</button>
+        </li>
+        <li class="issue">
+          <p class="example">Exemple</p>
+          <h3>Compte rendu du match de hand</h3>
+          <p>Inès</p>
+          <p>80 téléchargements sur 80</p>
+          <p class="state state-empty">Épuisé</p>
+          <button type="button" data-exemple="hand">Télécharger</button>
+        </li>
+      </ul>
+      <p id="message-exemple" class="note" role="status"></p>
+    </main>
+
+    <footer>
+      <p>Page ouverte sur cet ordinateur. AWS n'est pas contacté.</p>
+    </footer>
+    <script src="js/accueil.js"></script>
+  </body>
+</html>
