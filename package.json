@@ -6,5 +6,21 @@
   "type": "module",
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1156.0",
+    "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/lib-dynamodb": "^3.1156.0",
+    "@aws-sdk/s3-request-presigner": "^3.1156.0",
+    "dynalite": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "undici": "^8.12.3",
+    "vitest": "^3.2.7"
+  },
+  "scripts": {
+    "test": "vitest run"
   }
 }
