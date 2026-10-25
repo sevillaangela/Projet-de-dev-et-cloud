@@ -1,0 +1,10 @@
+{
+  "name": "journal-collaboratif",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Éditeur de documents partagé pour le journal numérique d'une association étudiante",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  }
+}
