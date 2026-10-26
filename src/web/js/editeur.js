@@ -89,9 +89,41 @@ function basculerApercu() {
   const ligneSousTitre = document.querySelector('#apercu-sous-titre')
   ligneSousTitre.textContent = sousTitre
   ligneSousTitre.hidden = sousTitre.length === 0
-  document.querySelector('#apercu-texte').textContent = champ.value
+  remplirApercuTexte(champ.value)
   champs.hidden = true
   garder.hidden = true
   cadre.hidden = false
   bouton.textContent = 'Revenir aux outils'
+}
+
+document.querySelector('#gras').addEventListener('click', () => entourer(champ, '**', '**'))
+document.querySelector('#italique').addEventListener('click', () => entourer(champ, '*', '*'))
+
+function entourer(zone, avant, apres) {
+  const debut = zone.selectionStart
+  const fin = zone.selectionEnd
+  const choisi = zone.value.slice(debut, fin)
+  zone.setRangeText(avant + choisi + apres, debut, fin, 'end')
+  const curseur = debut + avant.length
+  zone.setSelectionRange(curseur, curseur + choisi.length)
+  zone.focus()
+}
+
+function remplirApercuTexte(valeur) {
+  const zone = document.querySelector('#apercu-texte')
+  zone.replaceChildren()
+  const morceaux = valeur.split(/(\*\*[^*]+?\*\*|\*[^*]+?\*)/g)
+  for (const morceau of morceaux) {
+    if (morceau.startsWith('**') && morceau.endsWith('**')) {
+      const fort = document.createElement('strong')
+      fort.textContent = morceau.slice(2, -2)
+      zone.append(fort)
+    } else if (morceau.startsWith('*') && morceau.endsWith('*') && morceau.length > 2) {
+      const italique = document.createElement('em')
+      italique.textContent = morceau.slice(1, -1)
+      zone.append(italique)
+    } else {
+      zone.append(document.createTextNode(morceau))
+    }
+  }
 }

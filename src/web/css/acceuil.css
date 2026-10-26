@@ -364,3 +364,13 @@ textarea:focus-visible {
   white-space: pre-wrap;
   margin-top: 0.8rem;
 }
+
+.outils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.outils button {
+  padding: 0.35rem 0.75rem;
+}
