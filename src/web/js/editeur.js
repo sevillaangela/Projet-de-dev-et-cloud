@@ -1,4 +1,5 @@
 import { lireIdentite } from './identite.js'
+import { ecrireEnBoucle } from './ecrire.js'
 import { garderCorps, lireTexte } from './textes.js'
 
 const id = new URLSearchParams(location.search).get('id')
@@ -20,7 +21,7 @@ if (!identite) {
     formulaire.hidden = true
     message.textContent = "Ce texte n'est pas sur cet ordinateur pour ce nom."
   } else {
-    titre.textContent = texte.titre
+    montrerTitre(texte.titre)
     document.title = `${texte.titre} — Journal de l'école`
     champ.value = texte.corps
     formulaire.querySelector('button').addEventListener('click', () => {
@@ -32,4 +33,16 @@ if (!identite) {
       message.textContent = 'Texte gardé sur cet ordinateur.'
     })
   }
+}
+
+function montrerTitre(valeur) {
+  titre.replaceChildren()
+  const lecteur = document.createElement('span')
+  lecteur.className = 'uniquement-lecteur'
+  lecteur.textContent = valeur
+  const visible = document.createElement('span')
+  visible.setAttribute('aria-hidden', 'true')
+  visible.textContent = valeur
+  titre.append(lecteur, visible)
+  ecrireEnBoucle(visible)
 }

@@ -87,6 +87,13 @@ h3 {
   margin: 0.2rem 0 0.35rem;
   font-size: 1.55rem;
 }
+h3.publie {
+  font-family: var(--calligraphie);
+  font-weight: 700;
+  font-size: 2.35rem;
+  line-height: 1.05;
+}
+
 
 .kicker,
 .example {
