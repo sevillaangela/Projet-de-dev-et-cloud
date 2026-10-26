@@ -1,5 +1,4 @@
 const messagesEspaces = {
-  redacteur: 'L’espace rédacteur viendra sur la branche suivante. Cette page ne contacte pas AWS.',
   association: 'L’espace association viendra plus tard. Cette page ne contacte pas AWS.',
 }
 
@@ -17,3 +16,30 @@ document.querySelectorAll('[data-exemple]').forEach((bouton) => {
     zoneExemple.textContent = 'Exemple seulement. Aucun exemplaire n’est compté.'
   })
 })
+
+function ecrireEnBoucle(element) {
+  const texte = element.textContent
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduit || !texte) return
+
+  let i = 0
+  element.textContent = ''
+
+  function ajouter() {
+    i += 1
+    element.textContent = texte.slice(0, i)
+    if (i < texte.length) {
+      window.setTimeout(ajouter, 80)
+      return
+    }
+    window.setTimeout(() => {
+      i = 0
+      element.textContent = ''
+      window.setTimeout(ajouter, 400)
+    }, 1500)
+  }
+
+  ajouter()
+}
+
+document.querySelectorAll('[data-ecrire]').forEach(ecrireEnBoucle)
