@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mes documents — Journal de l'école</title>
+    <link rel="stylesheet" href="css/acceuil.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <p class="kicker">Espace rédacteur</p>
+      <h1>Mes documents</h1>
+      <p class="rule" id="qui">Le nom s'affichera ici.</p>
+    </header>
+
+    <main>
+      <p class="banner">
+        Ces textes restent sur cet ordinateur. Rien n'est envoyé.
+      </p>
+
+      <form id="creation">
+        <label>
+          Nouveau texte
+          <input name="titre" type="text" maxlength="120" required>
+        </label>
+        <button type="button">Créer</button>
+        <p id="message-creation" class="note" role="status"></p>
+      </form>
+
+      <h2>Déjà écrits</h2>
+      <p id="vide" class="vide">Aucun texte pour l'instant.</p>
+      <ul id="documents" class="issues"></ul>
+
+      <p class="liens">
+        <a href="entree.html">Changer d'identité</a>
+        <a href="index.html">Accueil</a>
+      </p>
+    </main>
+
+    <footer>
+      <p>Page ouverte sur cet ordinateur. AWS n'est pas contacté.</p>
+    </footer>
+      <script type="module" src="js/documents.js"></script>
+  </body>
+</html>

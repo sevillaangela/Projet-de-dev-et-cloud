@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entrée rédacteur — Journal de l'école</title>
+    <link rel="stylesheet" href="css/acceuil.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <p class="kicker">Espace rédacteur</p>
+      <h1>Qui écrit ?</h1>
+      <p class="rule">Le nom reste sur cet ordinateur. Aucun mot de passe, aucun envoi.</p>
+    </header>
+
+    <main>
+      <form id="formulaire-entree">
+        <label>
+          Nom
+          <input name="nom" type="text" maxlength="60" autocomplete="name" required>
+        </label>
+        <label>
+          Adresse électronique
+          <input name="email" type="email" maxlength="254" autocomplete="email" required>
+        </label>
+        <button type="button">Entrer</button>
+        <p id="message-entree" class="note" role="status"></p>
+      </form>
+      <p class="liens"><a href="documents.html">Mes documents</a>
+        <a href="index.html">Retour à l'accueil</a></p>
+    </main>
+
+    <footer>
+      <p>Page ouverte sur cet ordinateur. AWS n'est pas contacté.</p>
+    </footer>
+    <script type="module" src="js/entree.js"></script>
+  </body>
+</html>
