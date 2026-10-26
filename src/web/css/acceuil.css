@@ -293,3 +293,35 @@ footer {
     width: 100%;
   }
 }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  padding: 1.2rem 1.15rem 1.15rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: var(--encre);
+  font-weight: 700;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--bord);
+  border-radius: 0.7rem;
+  background: var(--fond);
+  color: var(--survol);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--encre);
+  border-color: var(--encre);
+}
