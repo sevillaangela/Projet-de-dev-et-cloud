@@ -3,12 +3,33 @@ import { documentsRepo, linksRepo } from './repositories.js';
 import { createDocumentService } from './services/documents.js';
 import { createLinkService } from './services/links.js';
 import { identify, parseBody, reply, json } from './http.js';
+import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 
-export function buildServices({ db, storage, cfg, now }) {
+function creerMailer() {
+  const from = process.env.MAIL_FROM;
+  if (!from) return null;
+  const client = new SESv2Client({});
+  return {
+    async sendInvitation({ to, inviterName, title, link }) {
+      await client.send(new SendEmailCommand({
+        FromEmailAddress: from,
+        Destination: { ToAddresses: [to] },
+        Content: {
+          Simple: {
+            Subject: { Data: `Invitation à écrire « ${title} »`, Charset: 'UTF-8' },
+            Body: { Text: { Data: `${inviterName} t'invite à écrire dans le journal.\nOuvre ce lien et entre exactement ${to} :\n${link}\n`, Charset: 'UTF-8' } },
+          },
+        },
+      }));
+    },
+  };
+}
+
+export function buildServices({ db, storage, cfg, now, mailer = creerMailer() }) {
   const docs = documentsRepo(db, cfg.docsTable);
   const links = linksRepo(db, cfg.linksTable);
   return {
-    documents: createDocumentService({ docs }),
+    documents: createDocumentService({ docs, mailer, now }),
     links: createLinkService({ links, docs, storage, cfg, now }),
   };
 }
@@ -25,10 +46,15 @@ export const publicRoutes = ({ links }) => ({
 
 // Routes des rédacteurs : identification requise.
 export const editorRoutes = ({ documents, links }) => ({
+  'DELETE /api/documents/{docId}': async (e) => {
+  const user = identify(e);
+  if (!user) return identificationRequise();
+  return reply(await documents.supprimer({ user, docId: e.pathParameters.docId }));
+},
   'GET /api/documents/{docId}': async (e) => {
     const user = identify(e);
     if (!user) return identificationRequise();
-    return reply(await documents.lire({ user, docId: e.pathParameters.docId }));
+    return reply(await documents.inviter({ user, docId: e.pathParameters.docId, email: corps.email, link: corps.lien }));
   },
   'POST /api/documents': async (e) => {
     const user = identify(e);

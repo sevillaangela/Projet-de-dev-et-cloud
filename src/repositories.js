@@ -1,6 +1,6 @@
 // Accès à DynamoDB. Chaque fonction correspond à UNE opération de la base.
 import { GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 const conditionRefusee = (err) => err?.name === 'ConditionalCheckFailedException';
 
 export function documentsRepo(db, table) {
@@ -17,6 +17,9 @@ export function documentsRepo(db, table) {
         new PutCommand({ TableName: table, Item: item, ConditionExpression: 'attribute_not_exists(docId)' }),
       );
     },
+    async remove(docId) {
+  await db.send(new DeleteCommand({ TableName: table, Key: { docId } }));
+},
 
     // Remplace le texte, augmente le numéro de modification (seq) et note le contributeur,
     // le tout en une seule opération atomique. Temporaire : remplacé par Yjs au bloc 2.

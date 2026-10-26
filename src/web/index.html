@@ -10,7 +10,7 @@
     <header class="masthead">
   <p class="kicker">Association étudiante</p>
   <h1>Journal de l'école</h1>
-  <p class="rule">Seulement des articles de l'école.</p>
+  <p class="rule">Retrouvez en temps réel Toute l'actualité de l école.</p>
   <div class="actions">
     <a href="entree.html">Espace rédacteur</a>
     <button type="button" class="secondaire" data-espace="association">Espace association</button>
@@ -19,14 +19,46 @@
 </header>
 
 <main>
-  <h2>Parutions</h2>
-  <p id="vide" class="vide">Aucune parution pour l'instant. Publie un texte depuis l'éditeur.</p>
-  <ul id="parutions" class="issues" hidden></ul>
-  <p id="message-parution" class="note" role="status"></p>
+  <h3>Parutions</h3>
+  <ul class="issues">
+    <li class="issue">
+      <p class="example">Article1</p>
+      <h3 class="publie">La rentrée</h3>
+      <p>Amina, Lucas</p>
+      <p>Les cartables sont trop lourds, le soleil aussi.</p>
+      <p class="state state-open">Disponible</p>
+      <button type="button" data-exemple="rentree">Télécharger</button>
+    </li>
+    <li class="issue">
+      <p class="example">Article2</p>
+      <h3 class="publie">Match de hand</h3>
+      <p>Inès</p>
+      <p>Victoire 24 à 18, les gradins pleins.</p>
+      <p class="state state-empty">Épuisé</p>
+      <button type="button" data-exemple="hand">Télécharger</button>
+    </li>
+    <li class="issue">
+      <p class="example">Article3</p>
+      <h3 class="publie">Club théâtre</h3>
+      <p>Nora</p>
+      <p>Répétition jeudi, l'acte II est enfin su.</p>
+      <p class="state state-open">Disponible</p>
+      <button type="button" data-exemple="theatre">Télécharger</button>
+    </li>
+    <li class="issue">
+      <p class="example">Article4</p>
+      <h3 class="publie">Cantine</h3>
+      <p>Paul</p>
+      <p>Vendredi : riz, poulet, fruit.</p>
+      <p class="state state-open">Disponible</p>
+      <button type="button" data-exemple="cantine">Télécharger</button>
+    </li>
+  </ul>
+  <p id="message-exemple" class="note" role="status"></p>
 </main>
 
     <footer>
-      <p>Page ouverte sur cet ordinateur. AWS n'est pas contacté.</p>
+      <p>WritePiece- votre journal scolaire</p>
     </footer>
     <script type="module" src="js/accueil.js"></script>
   </body>

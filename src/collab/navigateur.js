@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 
-export function relierEnsemble(champ, id) {
+export function relierEnsemble(champ, id, { nom = 'Quelqu’un', surEtat = () => {} } = {}) {
   const provider = new HocuspocusProvider({
     url: 'ws://127.0.0.1:47232',
     name: id,
@@ -10,6 +10,14 @@ export function relierEnsemble(champ, id) {
   const ytext = doc.getText('corps')
   let application = false
   let dernier = champ.value
+
+  function presents() {
+    const noms = []
+    provider.awareness?.getStates().forEach((etat) => {
+      if (etat.user?.nom) noms.push(etat.user.nom)
+    })
+    surEtat('connecté', noms)
+  }
 
   ytext.observe((event) => {
     if (application) return
@@ -50,6 +58,16 @@ export function relierEnsemble(champ, id) {
     application = false
     dernier = suivant
   })
+
+  provider.on('status', ({ status }) => {
+    if (status === 'connected') {
+      try { provider.setAwarenessField('user', { nom }) } catch { /* la liaison reste utilisable */ }
+      presents()
+      return
+    }
+    surEtat(status === 'connecting' ? 'connexion' : 'coupé', [])
+  })
+  provider.awareness?.on('change', presents)
 
   provider.on('synced', () => {
     if (ytext.length === 0 && champ.value) ytext.insert(0, champ.value)

@@ -61,3 +61,6 @@ export function noterTexte(email, id, titre) {
   ecrireTous([...lireTous().filter((item) => item.id !== id), texte])
   return texte
 }
+export function oublierTexte(email, id) {
+  ecrireTous(lireTous().filter((item) => !(item.id === id && item.email === email)))
+}

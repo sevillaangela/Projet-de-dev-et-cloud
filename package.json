@@ -16,6 +16,7 @@
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.1156.0",
     "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/client-sesv2": "^3.1156.0",
     "@aws-sdk/lib-dynamodb": "^3.1156.0",
     "@aws-sdk/s3-request-presigner": "^3.1156.0",
     "dynalite": "^4.0.0",
@@ -24,8 +25,11 @@
     "vitest": "^3.2.7"
   },
   "scripts": {
-    "test": "vitest run",
-    "accueil": "node src/web/server.js",
-    "ensemble": "node scripts/ensemble.js"
-  }
+  "test": "vitest run",
+  "accueil": "node src/web/server.js",
+  "serveur": "node scripts/serveur.js",
+  "ensemble": "node scripts/ensemble.js",
+  "salle": "esbuild src/collab/navigateur.js --bundle --format=esm --outfile=src/web/js/ensemble.js",
+  "build:ensemble": "esbuild src/collab/navigateur.js --bundle --format=esm --outfile=src/web/js/ensemble.js"
+}
 }

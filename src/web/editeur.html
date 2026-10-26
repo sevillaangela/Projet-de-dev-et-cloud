@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Écriture — Journal de l'école</title>
+    
     <link rel="stylesheet" href="css/acceuil.css">
   </head>
   <body>
@@ -11,6 +11,8 @@
       <p class="kicker">Espace rédacteur</p>
       <h1 id="titre">Écriture</h1>
       <p class="rule" id="qui">Le nom s'affichera ici.</p>
+      <p id="presence" class="note" role="status">Écriture ensemble : connexion…</p>
+      <p id="credit" class="credit">Crédit du jour : 10 000 caractères. <span id="compteur"></span></p>
     </header>
 
     <main>
@@ -25,8 +27,11 @@
             <input name="sous-titre" type="text" maxlength="120">
           </label>
           <div class="outils">
-            <button type="button" id="gras" class="secondaire">Gras</button>
-            <button type="button" id="italique" class="secondaire">Italique</button>
+             <button type="button" id="gras" class="secondaire">Gras</button>
+             <button type="button" id="italique" class="secondaire">Italique</button>
+             <button type="button" id="souligne" class="secondaire">Souligné</button>
+             <button type="button" id="liste" class="secondaire">Liste</button>
+              <button type="button" id="citation" class="secondaire">Citation</button>
           </div>
           <label>
             Texte

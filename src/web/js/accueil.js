@@ -1,7 +1,7 @@
 import { ecrireEnBoucle } from './ecrire.js'
 
 const messagesEspaces = {
-  association: 'L’espace association viendra plus tard. Cette page ne contacte pas AWS.',
+  association: 'L’espace association n est pas encore disponible.',
 }
 
 const zoneEspace = document.querySelector('#message-espace')
@@ -15,7 +15,7 @@ document.querySelectorAll('[data-espace]').forEach((bouton) => {
 
 document.querySelectorAll('[data-exemple]').forEach((bouton) => {
   bouton.addEventListener('click', () => {
-    zoneExemple.textContent = 'Exemple seulement. Aucun exemplaire n’est compté.'
+    zoneExemple.textContent = 'Procurez vous du lien pour pouvoir télécharger  l article.'
   })
 })
 

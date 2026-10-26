@@ -1,10 +1,10 @@
 // Règles métier des documents (version minimale du bloc 1).
 import { randomBytes } from 'node:crypto';
-import { cleanEmail, cleanTitle, cleanSubtitle, cleanText } from '../validation.js';
+import { cleanInviteLink, cleanEmail, cleanTitle, cleanSubtitle, cleanText } from '../validation.js';
 
 export const newId = (octets = 16) => randomBytes(octets).toString('base64url');
 
-export function createDocumentService({ docs, now = () => new Date().toISOString() }) {
+export function createDocumentService({ docs, mailer, now = () => new Date().toISOString() }) {
   return {
     async create({ user, title, text }) {
       const titre = cleanTitle(title);
@@ -61,20 +61,42 @@ export function createDocumentService({ docs, now = () => new Date().toISOString
       return { status: 200, body: { docId, titre, sousTitre, seq: apres.seq } };
     },
 
-    async inviter({ user, docId, email }) {
-      const adresse = cleanEmail(email);
-      if (!adresse) {
-        return { status: 400, body: { erreur: 'donnees_invalides', message: 'Adresse invalide.' } };
-      }
-      const doc = await docs.get(docId);
-      if (!doc) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
-      if (doc.ownerEmail !== user.email) {
-        return { status: 403, body: { erreur: 'acces_refuse', message: 'Seul le propriétaire peut inviter.' } };
-      }
-      if (doc.members.has(adresse)) return { status: 200, body: { docId, dejaMembre: true } };
-      const ok = await docs.addMember(docId, adresse);
-      if (!ok) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
-      return { status: 201, body: { docId, dejaMembre: false } };
-    },
+    async inviter({ user, docId, email, link }) {
+  const adresse = cleanEmail(email);
+  if (!adresse) {
+    return { status: 400, body: { erreur: 'donnees_invalides', message: 'Adresse invalide.' } };
+  }
+  const doc = await docs.get(docId);
+  if (!doc) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+  if (doc.ownerEmail !== user.email) {
+    return { status: 403, body: { erreur: 'acces_refuse', message: 'Seul le propriétaire peut inviter.' } };
+  }
+  if (doc.members.has(adresse)) return { status: 200, body: { docId, dejaMembre: true, mailEnvoye: false } };
+
+  const lien = cleanInviteLink(link, docId);
+  const ok = await docs.addMember(docId, adresse);
+  if (!ok) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+
+  let mailEnvoye = false;
+  if (mailer && lien) {
+    try {
+      await mailer.sendInvitation({ to: adresse, inviterName: user.name, title: doc.title, link: lien });
+      mailEnvoye = true;
+    } catch (err) {
+      console.error(JSON.stringify({ niveau: 'erreur', evt: 'mail_invitation', nom: err?.name, message: err?.message }));
+    }
+  }
+  return { status: 201, body: { docId, dejaMembre: false, mailEnvoye } };
+},
+async supprimer({ user, docId }) {
+  const doc = await docs.get(docId);
+  if (!doc) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+  if (doc.ownerEmail !== user.email) {
+    return { status: 403, body: { erreur: 'acces_refuse', message: 'Seul le propriétaire peut supprimer.' } };
+  }
+  await docs.remove(docId);
+  return { status: 200, body: { docId } };
+},
   };
 }
+

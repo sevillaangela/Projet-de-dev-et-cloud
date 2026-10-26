@@ -39,7 +39,7 @@ http.createServer(async (req, res) => {
   if (url.pathname.startsWith('/_s3/')) {
     const octets = objets.get(decodeURIComponent(url.pathname.slice(5)));
     if (!octets) { res.writeHead(404, CORS).end(); return; }
-    res.writeHead(200, { ...CORS, 'Content-Type': 'application/pdf' }).end(Buffer.from(octets));
+    res.writeHead(200, { 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS', }).end(Buffer.from(octets));
     return;
   }
   let corps = '';

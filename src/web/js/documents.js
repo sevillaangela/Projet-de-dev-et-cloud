@@ -1,6 +1,7 @@
 import { lireIdentite } from './identite.js'
 import { noterTexte, textesDe, titreValide } from './textes.js'
 import { api } from './api.js'
+import { oublierTexte } from './textes.js'
 
 const identite = lireIdentite()
 const qui = document.querySelector('#qui')
@@ -53,5 +54,20 @@ function afficher() {
     ouvrir.textContent = 'Ouvrir'
     item.append(titre, ouvrir)
     liste.append(item)
+    const retirer = document.createElement('button')
+    retirer.type = 'button'
+    retirer.className = 'secondaire'
+    retirer.textContent = 'Supprimer'
+    retirer.addEventListener('click', () => effacer(texte))
+    item.append(titre, ouvrir, retirer)
   }
+}
+async function effacer(texte) {
+  if (!confirm(`Supprimer « ${texte.titre} » ?`)) return
+  const recu = await api('DELETE', `/api/documents/${encodeURIComponent(texte.id)}`)
+  oublierTexte(identite.email, texte.id)
+  afficher()
+  message.textContent = recu.ok
+    ? `« ${texte.titre} » est supprimé.`
+    : `« ${texte.titre} » est retiré de cette liste.`
 }

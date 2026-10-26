@@ -13,7 +13,14 @@ const message = document.querySelector('#message-ecriture')
 const champTitre = formulaire.querySelector('[name="titre"]')
 const champSousTitre = formulaire.querySelector('[name="sous-titre"]')
 const champ = formulaire.querySelector('[name="corps"]')
+const compteur = document.querySelector('#compteur')
 
+function montrerCredit() {
+  if (!compteur) return
+  compteur.textContent = `${champ.value.length} caractères dans ce texte.`
+}
+
+champ.addEventListener('input', montrerCredit)
 if (!identite) {
   qui.textContent = 'Aucun nom enregistré sur cet ordinateur.'
   formulaire.hidden = true
@@ -44,7 +51,21 @@ async function ouvrir() {
   document.querySelector('#publier').addEventListener('click', publier)
   document.querySelector('#inviter').addEventListener('click', inviter)
   champ.value = recu.body.texte ?? ''
-  relierEnsemble(champ, id)
+  const presence = document.querySelector('#presence')
+relierEnsemble(champ, id, {
+  nom: identite.nom,
+  surEtat(etat, noms) {
+    if (etat === 'connecté') {
+      presence.textContent = noms.length > 1
+        ? `En ligne : ${noms.join(', ')}.`
+        : 'Vous êtes connectée. Ouvre ce document dans une autre fenêtre.'
+      return
+    }
+    presence.textContent = etat === 'connexion'
+      ? 'Écriture ensemble : connexion…'
+      : 'Écriture ensemble coupée. Lance npm run ensemble.'
+  },
+})
   formulaire.querySelector('#garder').addEventListener('click', enregistrer)
   document.querySelector('#apercu').addEventListener('click', basculerApercu)
 }
@@ -104,6 +125,22 @@ function basculerApercu() {
 
 document.querySelector('#gras').addEventListener('click', () => entourer(champ, '**', '**'))
 document.querySelector('#italique').addEventListener('click', () => entourer(champ, '*', '*'))
+document.querySelector('#souligne').addEventListener('click', () => entourer(champ, '__', '__'))
+document.querySelector('#liste').addEventListener('click', () => prefixer(champ, '- '))
+document.querySelector('#citation').addEventListener('click', () => prefixer(champ, '> '))
+
+function prefixer(zone, marque) {
+  const debut = zone.selectionStart
+  const fin = zone.selectionEnd
+  const avant = zone.value.lastIndexOf('\n', Math.max(0, debut - 1)) + 1
+  const apresSaut = zone.value.indexOf('\n', fin)
+  const apres = apresSaut === -1 ? zone.value.length : apresSaut
+  const bloc = zone.value.slice(avant, apres)
+  const nouveau = bloc.split('\n').map((ligne) => ligne.startsWith(marque) ? ligne : marque + ligne).join('\n')
+  zone.setRangeText(nouveau, avant, apres, 'end')
+  zone.focus()
+  zone.dispatchEvent(new Event('input', { bubbles: true }))
+}
 
 function entourer(zone, avant, apres) {
   const debut = zone.selectionStart
@@ -119,18 +156,33 @@ function entourer(zone, avant, apres) {
 function remplirApercuTexte(valeur) {
   const zone = document.querySelector('#apercu-texte')
   zone.replaceChildren()
-  const morceaux = valeur.split(/(\*\*[^*]+?\*\*|\*[^*]+?\*)/g)
-  for (const morceau of morceaux) {
-    if (morceau.startsWith('**') && morceau.endsWith('**')) {
+  for (const ligne of valeur.split('\n')) {
+    const bloc = document.createElement('p')
+    const contenu = ligne.startsWith('> ') ? ligne.slice(2) : ligne.startsWith('- ') ? ligne.slice(2) : ligne
+    if (ligne.startsWith('> ')) bloc.style.borderLeft = '3px solid currentColor'
+    if (ligne.startsWith('- ')) bloc.textContent = ''
+    ajouterMorceau(bloc, ligne.startsWith('- ') ? `• ${contenu}` : contenu)
+    zone.append(bloc)
+  }
+}
+
+function ajouterMorceau(zone, morceau) {
+  const parties = morceau.split(/(\*\*[^*]+?\*\*|__[^_]+?__|\*[^*]+?\*)/g)
+  for (const part of parties) {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       const fort = document.createElement('strong')
-      fort.textContent = morceau.slice(2, -2)
+      fort.textContent = part.slice(2, -2)
       zone.append(fort)
-    } else if (morceau.startsWith('*') && morceau.endsWith('*') && morceau.length > 2) {
+    } else if (part.startsWith('__') && part.endsWith('__') && part.length > 4) {
+      const ligne = document.createElement('u')
+      ligne.textContent = part.slice(2, -2)
+      zone.append(ligne)
+    } else if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       const italique = document.createElement('em')
-      italique.textContent = morceau.slice(1, -1)
+      italique.textContent = part.slice(1, -1)
       zone.append(italique)
     } else {
-      zone.append(document.createTextNode(morceau))
+      zone.append(document.createTextNode(part))
     }
   }
 }

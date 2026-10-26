@@ -9829,7 +9829,8 @@ var HocuspocusProvider = class extends EventEmitter {
 };
 
 // src/collab/navigateur.js
-function relierEnsemble(champ, id2) {
+function relierEnsemble(champ, id2, { nom = "Quelqu\u2019un", surEtat = () => {
+} } = {}) {
   const provider = new HocuspocusProvider({
     url: "ws://127.0.0.1:47232",
     name: id2
@@ -9838,6 +9839,13 @@ function relierEnsemble(champ, id2) {
   const ytext = doc2.getText("corps");
   let application = false;
   let dernier = champ.value;
+  function presents() {
+    const noms = [];
+    provider.awareness?.getStates().forEach((etat) => {
+      if (etat.user?.nom) noms.push(etat.user.nom);
+    });
+    surEtat("connect\xE9", noms);
+  }
   ytext.observe((event) => {
     if (application) return;
     application = true;
@@ -9876,6 +9884,18 @@ function relierEnsemble(champ, id2) {
     application = false;
     dernier = suivant;
   });
+  provider.on("status", ({ status }) => {
+    if (status === "connected") {
+      try {
+        provider.setAwarenessField("user", { nom });
+      } catch {
+      }
+      presents();
+      return;
+    }
+    surEtat(status === "connecting" ? "connexion" : "coup\xE9", []);
+  });
+  provider.awareness?.on("change", presents);
   provider.on("synced", () => {
     if (ytext.length === 0 && champ.value) ytext.insert(0, champ.value);
     else if (ytext.toString() !== champ.value) {

@@ -60,7 +60,7 @@ Resources:
     Properties:
       CorsConfiguration:
         AllowOrigins: ['*']
-        AllowMethods: [GET, POST, PUT, OPTIONS]
+        AllowMethods: [GET, POST, PUT, DELETE, OPTIONS]
         AllowHeaders: [content-type, x-user-email, x-user-name]
 
   # --- Fonction publique : page du journal et téléchargement (chemin du pic) ---
@@ -130,7 +130,7 @@ Resources:
         - Version: '2012-10-17'
           Statement:
             - Effect: Allow
-              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:DeleteItem]
               Resource: !GetAtt DocumentsTable.Arn
             - Effect: Allow
               Action: [dynamodb:PutItem]
@@ -154,6 +154,12 @@ Resources:
             ApiId: !Ref HttpApi
             Method: PUT
             Path: /api/documents/{docId}/texte
+        SupprimerDocument:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: DELETE
+            Path: /api/documents/{docId}
         Inviter:
           Type: HttpApi
           Properties:

@@ -367,6 +367,7 @@ button, .actions a, .issue a.ouvrir {
   transition: background 0.15s, border-color 0.15s;
 }
 
+
 /* Formulaires */
 form { gap: 1rem; padding: 1.4rem; }
 label { font-size: 0.9rem; font-weight: 600; }
