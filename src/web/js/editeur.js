@@ -1,6 +1,7 @@
 import { lireIdentite } from './identite.js'
 import { ecrireEnBoucle } from './ecrire.js'
 import { api } from './api.js'
+import { noterTexte } from './textes.js'
 
 const id = new URLSearchParams(location.search).get('id')
 const identite = lireIdentite()
@@ -8,6 +9,8 @@ const titre = document.querySelector('#titre')
 const qui = document.querySelector('#qui')
 const formulaire = document.querySelector('#ecriture')
 const message = document.querySelector('#message-ecriture')
+const champTitre = formulaire.querySelector('[name="titre"]')
+const champSousTitre = formulaire.querySelector('[name="sous-titre"]')
 const champ = formulaire.querySelector('[name="corps"]')
 
 if (!identite) {
@@ -29,6 +32,8 @@ async function ouvrir() {
     return
   }
   montrerTitre(recu.body.titre)
+  champTitre.value = recu.body.titre
+  champSousTitre.value = recu.body.sousTitre ?? ''
   document.title = `${recu.body.titre} — Journal de l'école`
   qui.textContent = recu.body.estProprietaire
     ? `Tu es le propriétaire, ${recu.body.proprietaire}.`
@@ -38,13 +43,19 @@ async function ouvrir() {
 }
 
 async function enregistrer() {
-  const recu = await api('PUT', `/api/documents/${encodeURIComponent(id)}/texte`, { texte: champ.value })
+  const recu = await api('PUT', `/api/documents/${encodeURIComponent(id)}/texte`, {
+    titre: champTitre.value,
+    sousTitre: champSousTitre.value,
+    texte: champ.value,
+  })
   if (!recu.ok) {
     message.textContent = recu.status === 0
       ? 'Le serveur des documents ne répond pas.'
       : "Le texte n'a pas été gardé."
     return
   }
+  montrerTitre(recu.body.titre)
+  noterTexte(identite.email, id, recu.body.titre)
   message.textContent = 'Texte gardé sur le serveur.'
 }
 

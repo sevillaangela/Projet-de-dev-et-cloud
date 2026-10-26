@@ -42,7 +42,7 @@ export const editorRoutes = ({ documents, links }) => ({
     if (!user) return identificationRequise();
     const corps = parseBody(e);
     if (!corps) return corpsInvalide();
-    return reply(await documents.setText({ user, docId: e.pathParameters.docId, text: corps.texte }));
+    return reply(await documents.setText({ user, docId: e.pathParameters.docId, text: corps.texte, title: corps.titre, subtitle: corps.sousTitre }));
   },
   'POST /api/documents/{docId}/links': async (e) => {
     const user = identify(e);

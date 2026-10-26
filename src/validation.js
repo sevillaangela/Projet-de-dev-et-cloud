@@ -19,6 +19,13 @@ export function cleanTitle(valeur) {
   return titre.length >= 1 && titre.length <= 120 ? titre : null;
 }
 
+export function cleanSubtitle(valeur) {
+  if (valeur === undefined || valeur === null) return '';
+  if (typeof valeur !== 'string') return null;
+  const sousTitre = valeur.trim();
+  return sousTitre.length <= 120 ? sousTitre : null;
+}
+
 export function cleanText(valeur) {
   if (typeof valeur !== 'string') return null;
   return valeur.length <= 100000 ? valeur : null;

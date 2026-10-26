@@ -20,22 +20,31 @@ export function documentsRepo(db, table) {
 
     // Remplace le texte, augmente le numéro de modification (seq) et note le contributeur,
     // le tout en une seule opération atomique. Temporaire : remplacé par Yjs au bloc 2.
-    async setText(docId, text, user, maintenant) {
+    async setText(docId, contenu, user, maintenant) {
       try {
         const r = await db.send(
           new UpdateCommand({
             TableName: table,
             Key: { docId },
-            UpdateExpression: 'SET #t = :t, #maj = :now, #contrib.#email = :nom ADD #seq :un',
+            UpdateExpression: 'SET #t = :t, #titre = :titre, #sous = :sous, #maj = :now, #contrib.#email = :nom ADD #seq :un',
             ConditionExpression: 'attribute_exists(docId)',
             ExpressionAttributeNames: {
               '#t': 'text',
+              '#titre': 'title',
+              '#sous': 'subtitle',
               '#maj': 'updatedAt',
               '#contrib': 'contributors',
               '#email': user.email,
               '#seq': 'seq',
             },
-            ExpressionAttributeValues: { ':t': text, ':now': maintenant, ':nom': user.name, ':un': 1 },
+            ExpressionAttributeValues: {
+              ':t': contenu.text,
+              ':titre': contenu.title,
+              ':sous': contenu.subtitle,
+              ':now': maintenant,
+              ':nom': user.name,
+              ':un': 1,
+            },
             ReturnValues: 'ALL_NEW',
           }),
         );
