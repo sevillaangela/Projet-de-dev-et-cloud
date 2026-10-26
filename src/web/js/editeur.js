@@ -1,6 +1,7 @@
 import { lireIdentite } from './identite.js'
 import { ecrireEnBoucle } from './ecrire.js'
 import { api } from './api.js'
+import { relierEnsemble } from './ensemble.js'
 import { noterTexte } from './textes.js'
 
 const id = new URLSearchParams(location.search).get('id')
@@ -41,6 +42,7 @@ async function ouvrir() {
   document.querySelector('#invitation').hidden = !recu.body.estProprietaire
   document.querySelector('#inviter').addEventListener('click', inviter)
   champ.value = recu.body.texte ?? ''
+  relierEnsemble(champ, id)
   formulaire.querySelector('#garder').addEventListener('click', enregistrer)
   document.querySelector('#apercu').addEventListener('click', basculerApercu)
 }
@@ -109,6 +111,7 @@ function entourer(zone, avant, apres) {
   const curseur = debut + avant.length
   zone.setSelectionRange(curseur, curseur + choisi.length)
   zone.focus()
+  zone.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
 function remplirApercuTexte(valeur) {
