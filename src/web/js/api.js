@@ -1,6 +1,6 @@
 import { lireIdentite } from './identite.js'
 
-export const API = 'http://127.0.0.1:43111'
+export const API = 'https://u6t0o0omz8.execute-api.eu-north-1.amazonaws.com'
 
 export async function api(methode, chemin, corps) {
   const identite = lireIdentite()

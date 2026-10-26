@@ -72,9 +72,11 @@ Resources:
         Format: esm
         Minify: false
         Target: es2022
+        External:
+          - '@aws-sdk/*'
         Sourcemap: false
         OutExtension:
-          - js=.mjs
+          - .js=.mjs
         EntryPoints:
           - src/handlers/public.js
     Properties:
@@ -114,9 +116,11 @@ Resources:
         Format: esm
         Minify: false
         Target: es2022
+        External:
+          - '@aws-sdk/*'
         Sourcemap: false
         OutExtension:
-          - js=.mjs
+          - .js=.mjs
         EntryPoints:
           - src/handlers/editor.js
     Properties:

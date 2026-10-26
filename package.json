@@ -25,6 +25,7 @@
   },
   "scripts": {
     "test": "vitest run",
-    "acceuil": "node web/server.js"
+    "accueil": "node src/web/server.js",
+    "ensemble": "node scripts/ensemble.js"
   }
 }
