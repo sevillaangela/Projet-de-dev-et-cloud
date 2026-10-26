@@ -1,5 +1,6 @@
+import { ecrireEnBoucle } from './ecrire.js'
+
 const messagesEspaces = {
-  redacteur: 'L’espace rédacteur viendra sur la branche suivante. Cette page ne contacte pas AWS.',
   association: 'L’espace association viendra plus tard. Cette page ne contacte pas AWS.',
 }
 
@@ -17,3 +18,5 @@ document.querySelectorAll('[data-exemple]').forEach((bouton) => {
     zoneExemple.textContent = 'Exemple seulement. Aucun exemplaire n’est compté.'
   })
 })
+
+document.querySelectorAll('[data-ecrire]').forEach(ecrireEnBoucle)

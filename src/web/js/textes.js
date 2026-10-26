@@ -53,3 +53,11 @@ export function garderCorps(email, id, corps) {
   ecrireTous(liste)
   return liste[index]
 }
+
+export function noterTexte(email, id, titre) {
+  const propre = titreValide(titre)
+  if (typeof email !== 'string' || typeof id !== 'string' || !propre) return null
+  const texte = { id, email, titre: propre, corps: '', maj: new Date().toISOString() }
+  ecrireTous([...lireTous().filter((item) => item.id !== id), texte])
+  return texte
+}

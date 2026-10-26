@@ -15,13 +15,55 @@
 
     <main>
       <form id="ecriture">
-        <label>
-          Texte
-          <textarea name="corps" rows="12" maxlength="100000"></textarea>
-        </label>
-        <button type="button">Garder</button>
+        <div id="champs">
+          <label>
+            Titre
+            <input name="titre" type="text" maxlength="120" required>
+          </label>
+          <label>
+            Sous-titre
+            <input name="sous-titre" type="text" maxlength="120">
+          </label>
+          <div class="outils">
+            <button type="button" id="gras" class="secondaire">Gras</button>
+            <button type="button" id="italique" class="secondaire">Italique</button>
+          </div>
+          <label>
+            Texte
+            <textarea name="corps" rows="12" maxlength="100000"></textarea>
+          </label>
+        </div>
+        <div class="actions">
+          <button type="button" id="garder">Garder</button>
+          <button type="button" id="apercu" class="secondaire">Aperçu</button>
+        </div>
         <p id="message-ecriture" class="note" role="status"></p>
       </form>
+
+
+      <form id="invitation" hidden>
+        <label>
+          Inviter une personne
+          <input name="invite" type="email" maxlength="254" autocomplete="off">
+        </label>
+        <button type="button" id="inviter" class="secondaire">Inviter</button>
+        <p id="message-invitation" class="note" role="status"></p>
+      </form>
+
+      <form id="publication" hidden>
+        <label>
+          Exemplaires
+          <input name="exemplaires" type="number" min="1" max="100000" value="2">
+        </label>
+        <button type="button" id="publier">Publier</button>
+        <p id="message-publication" class="note" role="status"></p>
+      </form>
+      <article id="cadre-apercu" class="issue" hidden>
+        <p class="kicker">Aperçu</p>
+        <h2 id="apercu-titre"></h2>
+        <p id="apercu-sous-titre" class="rule"></p>
+        <p id="apercu-texte"></p>
+      </article>
 
       <p class="liens">
         <a href="documents.html">Mes documents</a>
@@ -30,7 +72,7 @@
     </main>
 
     <footer>
-      <p>Page ouverte sur cet ordinateur. AWS n'est pas contacté.</p>
+      <p>Le texte est lu sur le serveur local. L'aperçu ne publie rien.</p>
     </footer>
       <script type="module" src="js/editeur.js"></script>
   </body>

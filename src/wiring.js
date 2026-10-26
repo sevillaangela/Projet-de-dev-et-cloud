@@ -25,6 +25,11 @@ export const publicRoutes = ({ links }) => ({
 
 // Routes des rédacteurs : identification requise.
 export const editorRoutes = ({ documents, links }) => ({
+  'GET /api/documents/{docId}': async (e) => {
+    const user = identify(e);
+    if (!user) return identificationRequise();
+    return reply(await documents.lire({ user, docId: e.pathParameters.docId }));
+  },
   'POST /api/documents': async (e) => {
     const user = identify(e);
     if (!user) return identificationRequise();
@@ -37,7 +42,14 @@ export const editorRoutes = ({ documents, links }) => ({
     if (!user) return identificationRequise();
     const corps = parseBody(e);
     if (!corps) return corpsInvalide();
-    return reply(await documents.setText({ user, docId: e.pathParameters.docId, text: corps.texte }));
+    return reply(await documents.setText({ user, docId: e.pathParameters.docId, text: corps.texte, title: corps.titre, subtitle: corps.sousTitre }));
+  },
+  'POST /api/documents/{docId}/invitations': async (e) => {
+    const user = identify(e);
+    if (!user) return identificationRequise();
+    const corps = parseBody(e);
+    if (!corps) return corpsInvalide();
+    return reply(await documents.inviter({ user, docId: e.pathParameters.docId, email: corps.email }));
   },
   'POST /api/documents/{docId}/links': async (e) => {
     const user = identify(e);
