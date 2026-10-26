@@ -40,6 +40,8 @@ async function ouvrir() {
     ? `Tu es le propriétaire, ${recu.body.proprietaire}.`
     : `Propriétaire : ${recu.body.proprietaire}.`
   document.querySelector('#invitation').hidden = !recu.body.estProprietaire
+  document.querySelector('#publication').hidden = false
+  document.querySelector('#publier').addEventListener('click', publier)
   document.querySelector('#inviter').addEventListener('click', inviter)
   champ.value = recu.body.texte ?? ''
   relierEnsemble(champ, id)
@@ -147,4 +149,20 @@ async function inviter() {
     ? 'Cette personne a déjà accès.'
     : 'Invitation enregistrée. La personne ouvre ce même lien avec son nom.'
   if (!recu.body.dejaMembre) champ.value = ''
+}
+
+async function publier() {
+  const zone = document.querySelector('#message-publication')
+  const nombre = Number(document.querySelector('[name="exemplaires"]').value)
+  const recu = await api('POST', `/api/documents/${encodeURIComponent(id)}/links`, { exemplaires: nombre })
+  if (!recu.ok) {
+    zone.textContent = recu.status === 0
+      ? 'Le serveur des documents ne répond pas.'
+      : 'La publication n\'a pas abouti. Le nombre doit être entre 1 et 100000.'
+    return
+  }
+  const lien = document.createElement('a')
+  lien.href = recu.body.chemin
+  lien.textContent = 'Ouvrir le journal'
+  zone.replaceChildren(document.createTextNode(`Publié, ${recu.body.exemplaires} exemplaires. `), lien)
 }

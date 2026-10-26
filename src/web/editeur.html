@@ -49,6 +49,15 @@
         <button type="button" id="inviter" class="secondaire">Inviter</button>
         <p id="message-invitation" class="note" role="status"></p>
       </form>
+
+      <form id="publication" hidden>
+        <label>
+          Exemplaires
+          <input name="exemplaires" type="number" min="1" max="100000" value="2">
+        </label>
+        <button type="button" id="publier">Publier</button>
+        <p id="message-publication" class="note" role="status"></p>
+      </form>
       <article id="cadre-apercu" class="issue" hidden>
         <p class="kicker">Aperçu</p>
         <h2 id="apercu-titre"></h2>
