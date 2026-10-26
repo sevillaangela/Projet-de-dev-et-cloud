@@ -38,6 +38,8 @@ async function ouvrir() {
   qui.textContent = recu.body.estProprietaire
     ? `Tu es le propriétaire, ${recu.body.proprietaire}.`
     : `Propriétaire : ${recu.body.proprietaire}.`
+  document.querySelector('#invitation').hidden = !recu.body.estProprietaire
+  document.querySelector('#inviter').addEventListener('click', inviter)
   champ.value = recu.body.texte ?? ''
   formulaire.querySelector('#garder').addEventListener('click', enregistrer)
   document.querySelector('#apercu').addEventListener('click', basculerApercu)
@@ -126,4 +128,20 @@ function remplirApercuTexte(valeur) {
       zone.append(document.createTextNode(morceau))
     }
   }
+}
+
+async function inviter() {
+  const champ = document.querySelector('[name="invite"]')
+  const zone = document.querySelector('#message-invitation')
+  const recu = await api('POST', `/api/documents/${encodeURIComponent(id)}/invitations`, { email: champ.value })
+  if (!recu.ok) {
+    zone.textContent = recu.status === 0
+      ? 'Le serveur des documents ne répond pas.'
+      : "L'invitation n'a pas été enregistrée."
+    return
+  }
+  zone.textContent = recu.body.dejaMembre
+    ? 'Cette personne a déjà accès.'
+    : 'Invitation enregistrée. La personne ouvre ce même lien avec son nom.'
+  if (!recu.body.dejaMembre) champ.value = ''
 }

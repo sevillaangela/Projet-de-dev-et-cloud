@@ -55,6 +55,26 @@ export function documentsRepo(db, table) {
       }
     },
 
+
+    async addMember(docId, email) {
+      try {
+        await db.send(
+          new UpdateCommand({
+            TableName: table,
+            Key: { docId },
+            UpdateExpression: 'ADD #members :email',
+            ConditionExpression: 'attribute_exists(docId)',
+            ExpressionAttributeNames: { '#members': 'members' },
+            ExpressionAttributeValues: { ':email': new Set([email]) },
+          }),
+        );
+        return true;
+      } catch (err) {
+        if (conditionRefusee(err)) return false;
+        throw err;
+      }
+    },
+
     // Verrou de génération du PDF : une seule requête à la fois peut fabriquer le PDF.
     async acquirePdfLock(docId, jusquA, maintenant) {
       try {

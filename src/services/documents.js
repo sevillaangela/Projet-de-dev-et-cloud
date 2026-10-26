@@ -1,6 +1,6 @@
 // Règles métier des documents (version minimale du bloc 1).
 import { randomBytes } from 'node:crypto';
-import { cleanTitle, cleanSubtitle, cleanText } from '../validation.js';
+import { cleanEmail, cleanTitle, cleanSubtitle, cleanText } from '../validation.js';
 
 export const newId = (octets = 16) => randomBytes(octets).toString('base64url');
 
@@ -59,6 +59,22 @@ export function createDocumentService({ docs, now = () => new Date().toISOString
       }
       const apres = await docs.setText(docId, { text: texte, title: titre, subtitle: sousTitre }, user, now());
       return { status: 200, body: { docId, titre, sousTitre, seq: apres.seq } };
+    },
+
+    async inviter({ user, docId, email }) {
+      const adresse = cleanEmail(email);
+      if (!adresse) {
+        return { status: 400, body: { erreur: 'donnees_invalides', message: 'Adresse invalide.' } };
+      }
+      const doc = await docs.get(docId);
+      if (!doc) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+      if (doc.ownerEmail !== user.email) {
+        return { status: 403, body: { erreur: 'acces_refuse', message: 'Seul le propriétaire peut inviter.' } };
+      }
+      if (doc.members.has(adresse)) return { status: 200, body: { docId, dejaMembre: true } };
+      const ok = await docs.addMember(docId, adresse);
+      if (!ok) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+      return { status: 201, body: { docId, dejaMembre: false } };
     },
   };
 }
