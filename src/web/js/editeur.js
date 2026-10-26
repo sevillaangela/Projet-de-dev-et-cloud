@@ -1,6 +1,6 @@
 import { lireIdentite } from './identite.js'
 import { ecrireEnBoucle } from './ecrire.js'
-import { garderCorps, lireTexte } from './textes.js'
+import { api } from './api.js'
 
 const id = new URLSearchParams(location.search).get('id')
 const identite = lireIdentite()
@@ -15,24 +15,34 @@ if (!identite) {
   formulaire.hidden = true
 } else {
   qui.textContent = identite.nom
-  const texte = lireTexte(identite.email, id)
-  if (!texte) {
+  ouvrir()
+}
+
+async function ouvrir() {
+  const recu = await api('GET', `/api/documents/${encodeURIComponent(id)}`)
+  if (!recu.ok) {
     titre.textContent = 'Texte introuvable'
     formulaire.hidden = true
-    message.textContent = "Ce texte n'est pas sur cet ordinateur pour ce nom."
-  } else {
-    montrerTitre(texte.titre)
-    document.title = `${texte.titre} — Journal de l'école`
-    champ.value = texte.corps
-    formulaire.querySelector('button').addEventListener('click', () => {
-      const garde = garderCorps(identite.email, texte.id, champ.value)
-      if (!garde) {
-        message.textContent = "Le texte dépasse la limite et n'a pas été gardé."
-        return
-      }
-      message.textContent = 'Texte gardé sur cet ordinateur.'
-    })
+    message.textContent = recu.status === 0
+      ? 'Le serveur des documents ne répond pas. Lance-le sur le port 43111.'
+      : "Ce texte n'est pas sur le serveur pour ce nom."
+    return
   }
+  montrerTitre(recu.body.titre)
+  document.title = `${recu.body.titre} — Journal de l'école`
+  champ.value = recu.body.texte ?? ''
+  formulaire.querySelector('button').addEventListener('click', enregistrer)
+}
+
+async function enregistrer() {
+  const recu = await api('PUT', `/api/documents/${encodeURIComponent(id)}/texte`, { texte: champ.value })
+  if (!recu.ok) {
+    message.textContent = recu.status === 0
+      ? 'Le serveur des documents ne répond pas.'
+      : "Le texte n'a pas été gardé."
+    return
+  }
+  message.textContent = 'Texte gardé sur le serveur.'
 }
 
 function montrerTitre(valeur) {

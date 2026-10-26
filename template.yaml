@@ -138,6 +138,12 @@ Resources:
             ApiId: !Ref HttpApi
             Method: POST
             Path: /api/documents
+        LireDocument:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /api/documents/{docId}
         SetText:
           Type: HttpApi
           Properties:

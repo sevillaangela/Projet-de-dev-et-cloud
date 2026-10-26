@@ -29,6 +29,18 @@ export function createDocumentService({ docs, now = () => new Date().toISOString
       return { status: 201, body: { docId, titre, seq: 1 } };
     },
 
+    async lire({ user, docId }) {
+      const doc = await docs.get(docId);
+      if (!doc) return { status: 404, body: { erreur: 'introuvable', message: 'Document introuvable.' } };
+      if (!doc.members.has(user.email)) {
+        return { status: 403, body: { erreur: 'acces_refuse', message: "Vous n'avez pas accès à ce document." } };
+      }
+      return {
+        status: 200,
+        body: { docId, titre: doc.title, texte: doc.text ?? '', seq: doc.seq, proprietaire: doc.ownerName },
+      };
+    },
+
     async setText({ user, docId, text }) {
       const texte = cleanText(text);
       if (texte === null) {

@@ -1,5 +1,6 @@
 import { lireIdentite } from './identite.js'
-import { creerTexte, textesDe, titreValide } from './textes.js'
+import { noterTexte, textesDe, titreValide } from './textes.js'
+import { api } from './api.js'
 
 const identite = lireIdentite()
 const qui = document.querySelector('#qui')
@@ -15,17 +16,26 @@ if (!identite) {
 } else {
   qui.textContent = identite.nom
   afficher()
-  formulaire.querySelector('button').addEventListener('click', () => {
-    const titre = titreValide(champTitre.value)
-    if (!titre) {
-      message.textContent = 'Indique un titre, entre 1 et 120 caractères.'
-      return
-    }
-    const texte = creerTexte(identite.email, titre)
-    champTitre.value = ''
-    message.textContent = `« ${texte.titre} » est gardé sur cet ordinateur.`
-    afficher()
-  })
+  formulaire.querySelector('button').addEventListener('click', creer)
+}
+
+async function creer() {
+  const titre = titreValide(champTitre.value)
+  if (!titre) {
+    message.textContent = 'Indique un titre, entre 1 et 120 caractères.'
+    return
+  }
+  const recu = await api('POST', '/api/documents', { titre, texte: '' })
+  if (!recu.ok) {
+    message.textContent = recu.status === 0
+      ? 'Le serveur des documents ne répond pas. Lance-le sur le port 43111.'
+      : "Le serveur n'a pas créé le texte."
+    return
+  }
+  noterTexte(identite.email, recu.body.docId, recu.body.titre)
+  champTitre.value = ''
+  message.textContent = `« ${recu.body.titre} » est créé sur le serveur.`
+  afficher()
 }
 
 function afficher() {

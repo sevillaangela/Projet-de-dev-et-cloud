@@ -25,6 +25,11 @@ export const publicRoutes = ({ links }) => ({
 
 // Routes des rédacteurs : identification requise.
 export const editorRoutes = ({ documents, links }) => ({
+  'GET /api/documents/{docId}': async (e) => {
+    const user = identify(e);
+    if (!user) return identificationRequise();
+    return reply(await documents.lire({ user, docId: e.pathParameters.docId }));
+  },
   'POST /api/documents': async (e) => {
     const user = identify(e);
     if (!user) return identificationRequise();
