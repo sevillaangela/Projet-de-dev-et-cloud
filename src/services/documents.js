@@ -37,7 +37,7 @@ export function createDocumentService({ docs, now = () => new Date().toISOString
       }
       return {
         status: 200,
-        body: { docId, titre: doc.title, texte: doc.text ?? '', seq: doc.seq, proprietaire: doc.ownerName },
+        body: { docId, titre: doc.title, texte: doc.text ?? '', seq: doc.seq, proprietaire: doc.ownerName, estProprietaire: doc.ownerEmail === user.email },
       };
     },
 

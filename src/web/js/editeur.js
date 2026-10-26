@@ -30,6 +30,9 @@ async function ouvrir() {
   }
   montrerTitre(recu.body.titre)
   document.title = `${recu.body.titre} — Journal de l'école`
+  qui.textContent = recu.body.estProprietaire
+    ? `Tu es le propriétaire, ${recu.body.proprietaire}.`
+    : `Propriétaire : ${recu.body.proprietaire}.`
   champ.value = recu.body.texte ?? ''
   formulaire.querySelector('button').addEventListener('click', enregistrer)
 }
