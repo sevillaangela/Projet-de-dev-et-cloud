@@ -352,3 +352,15 @@ textarea:focus-visible {
   white-space: nowrap;
   border: 0;
 }
+
+#cadre-apercu h2 {
+  font-family: var(--calligraphie);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1.05;
+}
+
+#apercu-texte {
+  white-space: pre-wrap;
+  margin-top: 0.8rem;
+}

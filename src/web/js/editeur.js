@@ -39,7 +39,8 @@ async function ouvrir() {
     ? `Tu es le propriétaire, ${recu.body.proprietaire}.`
     : `Propriétaire : ${recu.body.proprietaire}.`
   champ.value = recu.body.texte ?? ''
-  formulaire.querySelector('button').addEventListener('click', enregistrer)
+  formulaire.querySelector('#garder').addEventListener('click', enregistrer)
+  document.querySelector('#apercu').addEventListener('click', basculerApercu)
 }
 
 async function enregistrer() {
@@ -69,4 +70,28 @@ function montrerTitre(valeur) {
   visible.textContent = valeur
   titre.append(lecteur, visible)
   ecrireEnBoucle(visible)
+}
+
+function basculerApercu() {
+  const cadre = document.querySelector('#cadre-apercu')
+  const bouton = document.querySelector('#apercu')
+  const champs = document.querySelector('#champs')
+  const garder = document.querySelector('#garder')
+  if (!cadre.hidden) {
+    cadre.hidden = true
+    champs.hidden = false
+    garder.hidden = false
+    bouton.textContent = 'Aperçu'
+    return
+  }
+  const sousTitre = champSousTitre.value.trim()
+  document.querySelector('#apercu-titre').textContent = champTitre.value.trim() || 'Sans titre'
+  const ligneSousTitre = document.querySelector('#apercu-sous-titre')
+  ligneSousTitre.textContent = sousTitre
+  ligneSousTitre.hidden = sousTitre.length === 0
+  document.querySelector('#apercu-texte').textContent = champ.value
+  champs.hidden = true
+  garder.hidden = true
+  cadre.hidden = false
+  bouton.textContent = 'Revenir aux outils'
 }
